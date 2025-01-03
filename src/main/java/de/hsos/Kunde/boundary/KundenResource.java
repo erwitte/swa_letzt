@@ -1,9 +1,9 @@
 package de.hsos.Kunde.boundary;
 
 import de.hsos.Kunde.entity.Adresse;
-import de.hsos.Bestellung.boundary.DTOs.AddKundeDTO;
-import de.hsos.Bestellung.boundary.DTOs.AdresseDTO;
-import de.hsos.Bestellung.boundary.DTOs.ReturnKundeDTO;
+import de.hsos.Kunde.boundary.DTO.AddKundeDTO;
+import de.hsos.Kunde.boundary.DTO.AdresseDTO;
+import de.hsos.Kunde.boundary.DTO.ReturnKundeDTO;
 import de.hsos.Kunde.control.KundenService;
 import de.hsos.Kunde.entity.Kunde;
 import jakarta.enterprise.context.RequestScoped;

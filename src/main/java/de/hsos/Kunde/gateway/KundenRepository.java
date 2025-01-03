@@ -1,6 +1,6 @@
 package de.hsos.Kunde.gateway;
 
-import de.hsos.Bestellung.boundary.DTOs.AdresseDTO;
+import de.hsos.Kunde.boundary.DTO.AdresseDTO;
 import de.hsos.Kunde.control.KundenService;
 import de.hsos.Kunde.entity.Adresse;
 import de.hsos.Kunde.entity.Kunde;

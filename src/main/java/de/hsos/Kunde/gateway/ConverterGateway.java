@@ -1,7 +1,7 @@
 package de.hsos.Kunde.gateway;
 
 import de.hsos.Kunde.entity.Adresse;
-import de.hsos.Bestellung.boundary.DTOs.AdresseDTO;
+import de.hsos.Kunde.boundary.DTO.AdresseDTO;
 import de.hsos.Bestellung.entity.Bestellposten;
 import de.hsos.Kunde.entity.Kunde;
 import de.hsos.Bestellung.entity.Zutat;

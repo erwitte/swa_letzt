@@ -1,8 +1,8 @@
 package de.hsos.Kunde.boundary;
 
 import de.hsos.Kunde.entity.Adresse;
-import de.hsos.Bestellung.boundary.DTOs.AdresseDTO;
-import de.hsos.Bestellung.boundary.DTOs.ReturnKundeDTO;
+import de.hsos.Kunde.boundary.DTO.AdresseDTO;
+import de.hsos.Kunde.boundary.DTO.ReturnKundeDTO;
 import de.hsos.Kunde.entity.Kunde;
 
 public class ConverterBoundary {

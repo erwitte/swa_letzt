@@ -1,4 +1,4 @@
-package de.hsos.Bestellung.boundary.DTOs;
+package de.hsos.Kunde.boundary.DTO;
 
 public record KundeAdresseAendernDTO(
         long id,

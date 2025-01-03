@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizza4me</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+    </style>
+</head>
+<body>
+<h1>Pizza4me</h1>
+
+<h3>aktuelle Bestellung</h3>
+<table>
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Zutaten</th>
+        <th>Anzahl</th>
+        <th>Preis in €</th>
+    </tr>
+    </thead>
+    <tbody id="bestellungTable">
+    </tbody>
+</table>
+
+<br>
+<button onClick="bestellpostenErzeugen()">neuer Bestellposten</button>
+
+<br>
+BestellpostenNummer:
+<input type="number" id="chosenBestellpostenAnzahl">
+neue Anzahl:
+<input type="number" id="chosenAnzahl"><button onclick="chooseAnzahl()">wählen</button>
+<br>
+BestellpostenNummer löschen:
+<input type="number" id="chosenBestellpostenLoeschen"><button onclick="bestellpostenLoeschen()">wählen</button>
+
+<h3>Standardpizzen</h3>
+<table>
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Pizza</th>
+        <th>Preis in €</th>
+    </tr>
+    </thead>
+    <tbody>
+    {#for pizza in pizzas}
+    <tr>
+        <td>index</td>
+        <td>{pizza.name}</td>
+        <td>{pizza.preis}</td>
+    </tr>
+    {/for}
+    </tbody>
+</table>
+BestellpostenNummer:
+<input type="number" class="chosenBestellposten">
+PizzaNummer:
+<input type="number" id="chosenPizza"><button onclick="choosePizza()">wählen</button>
+
+<br>
+<h3>Zutaten</h3>
+<table>
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Zutat</th>
+        <th>Preis in €</th>
+    </tr>
+    </thead>
+    {#let zutatenCounter = 1}
+    {#for zutat in zutaten}
+    <tr>
+        <td>{zutat.index}</td>
+        <td>{zutat.name}</td>
+        <td>{zutat.preis}</td>
+    </tr>
+    {/for}
+</table>
+BestellpostenNummer:
+<input type="number" id="chosenBestellpostenZutat">
+ZutatNummer getrennt mit Komma:
+<input type="text" id="chosenZutat"><button onclick="chooseZutat()">wählen</button>
+<br><br>
+<button>bestellen</button>
+</body>
+
+<script>
+    class Bestellung {
+        constructor(id, anzahl, zutaten, preis) {
+            this.id = id;
+            this.anzahl = anzahl;
+            this.zutaten = zutaten;
+            this.preis = preis;
+        }
+    }
+    const urlBestellung = 'http://localhost:8080/bestellungen/';
+    const urlBestellposten = "http://localhost:8080/bestellposten/";
+    let bestellungId = 0;
+    let bestellposten;
+    let bestellung = [];
+    createBestellung();
+
+    function bestellpostenLoeschen(){
+        const bestellpostenId = document.getElementById("chosenBestellpostenLoeschen").value;
+        fetch(urlBestellposten + "/" + bestellungId + "/" + bestellpostenId, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+        fetchWholeOrder();
+    }
+
+    function chooseAnzahl(){
+        const bestellpostenId = document.getElementById("chosenBestellpostenAnzahl").value;
+        const anzahl = document.getElementById("chosenAnzahl").value;
+        const data = {
+            anzahl: anzahl
+        };
+        fetch(urlBestellposten + bestellpostenId, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        fetchWholeOrder();
+    }
+
+    function chooseZutat(){
+        const bestellpostenId = document.getElementById("chosenBestellpostenZutat").value;
+        const zutaten = document.getElementById("chosenZutat").value;
+        console.log(zutaten);
+    }
+
+    function fetchWholeOrder(){
+        fetch(urlBestellung + bestellungId, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("HTTP error! status: " + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                bestellposten = data;
+                fillBestellungArray();
+            })
+            .catch(error => {
+                console.error("There was an error with the fetch operation: " + error.message);
+            });
+    }
+
+    function fillBestellungArray(){
+        bestellung = [];
+        bestellposten.map(posten => {
+            const zutatenNames = posten.pizzaZutaten.map(zutat => zutat.name);
+            const totalPreis = posten.pizzaZutaten.reduce((sum, zutat) => sum + zutat.preis, 0);
+            const anzahl = posten.anzahl;
+            const id = posten.id;
+            bestellung.push(new Bestellung(id, anzahl, zutatenNames.join(", "), totalPreis));
+        });
+        populateTable();
+    }
+
+    function createBestellung() {
+        fetch(urlBestellung, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("HTTP error! status: " + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                bestellungId = data;
+            })
+            .catch(error => {
+                console.error("There was an error with the fetch operation: " + error.message);
+            });
+    }
+
+    function bestellpostenErzeugen(){
+        fetch(urlBestellung + bestellungId, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("HTTP error! status: " + response.status);
+        }
+        return response.json();
+    })
+        .then(data => {
+            console.log("Successfully updated order with postenId:", data);
+        })
+        .catch(error => {
+            console.error("Failed to update order:", error);
+        });
+        fetchWholeOrder();
+    }
+
+    function populateTable() {
+        const tableBody = document.getElementById("bestellungTable");
+        tableBody.innerHTML = "";
+        bestellung.forEach(order => {
+            const row = document.createElement("tr");
+            const idCell = document.createElement("td");
+            idCell.textContent = order.id;
+            const zutatenCell = document.createElement("td");
+            zutatenCell.textContent = order.zutaten;
+            const anzahlCell = document.createElement("td");
+            anzahlCell.textContent = order.anzahl;
+            const preisCell = document.createElement("td");
+            preisCell.textContent = order.preis;
+            row.appendChild(idCell);
+            row.appendChild(zutatenCell);
+            row.append(anzahlCell);
+            row.appendChild(preisCell);
+            tableBody.appendChild(row);
+        });
+    }
+</script>
+</html>

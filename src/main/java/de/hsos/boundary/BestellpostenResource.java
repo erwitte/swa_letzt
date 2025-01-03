@@ -2,6 +2,7 @@ package de.hsos.boundary;
 
 import de.hsos.boundary.DTOs.AnzahlPizzaDTO;
 import de.hsos.boundary.DTOs.StandardpizzaDTO;
+import de.hsos.boundary.DTOs.ZutatDTO;
 import de.hsos.boundary.DTOs.ZutatenDTO;
 import de.hsos.control.BestellpostenService;
 import de.hsos.gateway.DTO.BestellpostenJPAEntity;
@@ -12,6 +13,7 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Path("/bestellposten")
 public class BestellpostenResource {
@@ -30,7 +32,9 @@ public class BestellpostenResource {
     public Response addZutatZuBestellposten(@PathParam("bestellpostenId") int bestellpostenId,
                                             ZutatenDTO zutatenDTO){
         try {
-            bestellpostenService.addZutatZuBestellposten(bestellpostenId, zutatenDTO.zutaten());
+            bestellpostenService.addZutatZuBestellposten(bestellpostenId, zutatenDTO.zutaten().stream()
+                    .map(this::parseNumberToZutat)
+                    .collect(Collectors.toList()));
             return Response.ok().build();
         } catch (NullPointerException e) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -71,25 +75,39 @@ public class BestellpostenResource {
                                                     StandardpizzaDTO standardpizzaDTO) {
         try {
             switch (standardpizzaDTO.pizza()) {
-                case "Margharita":
+                case "1":
                     bestellpostenService.addZutatZuBestellposten(bestellpostenId, Collections.singletonList("Käse"));
                     break;
-                case "Funghi":
+                case "2":
                     bestellpostenService.addZutatZuBestellposten(bestellpostenId, List.of(new String[]{"Käse", "Pilze"}));
                     break;
-                case "Sucuk":
+                case "3":
                     bestellpostenService.addZutatZuBestellposten(bestellpostenId, List.of(new String[]{"Käse", "Sucuk"}));
                     break;
-                case "Sucuk mit Ei":
+                case "4":
                     bestellpostenService.addZutatZuBestellposten(bestellpostenId, List.of(new String[]{"Käse", "Sucuk", "Ei"}));
                     break;
-                case "Kebab":
+                case "5":
                     bestellpostenService.addZutatZuBestellposten(bestellpostenId, List.of(new String[]{"Käse", "Hollandaise", "Zwiebeln", "Kebabfleisch"}));
                     break;
             }
+            System.out.println("esangf-lesngfsgfsgfsk");
             return Response.ok().build();
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
+    }
+
+    private String parseNumberToZutat(String number){
+        return switch (number) {
+            case "1" -> "Käse";
+            case "2" -> "Pilze";
+            case "3" -> "Sucuk";
+            case "4" -> "Ei";
+            case "5" -> "Zwiebeln";
+            case "6" -> "Hollandaise";
+            case "7" -> "Kebabfleisch";
+            default -> "nix default";
+        };
     }
 }

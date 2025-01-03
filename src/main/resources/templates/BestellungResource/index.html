@@ -52,7 +52,7 @@ BestellpostenNummer löschen:
     <tbody>
     {#for pizza in pizzas}
     <tr>
-        <td>index</td>
+        <td>{pizza.index}</td>
         <td>{pizza.name}</td>
         <td>{pizza.preis}</td>
     </tr>
@@ -60,7 +60,7 @@ BestellpostenNummer löschen:
     </tbody>
 </table>
 BestellpostenNummer:
-<input type="number" class="chosenBestellposten">
+<input type="number" id="chosenBestellpostenStandard">
 PizzaNummer:
 <input type="number" id="chosenPizza"><button onclick="choosePizza()">wählen</button>
 
@@ -107,6 +107,22 @@ ZutatNummer getrennt mit Komma:
     let bestellung = [];
     createBestellung();
 
+    function choosePizza(){
+        const bestellpostenId = document.getElementById("chosenBestellpostenStandard").value;
+        const standardPizza = document.getElementById("chosenPizza").value;
+        const data = {
+            pizza: standardPizza.toString()
+        }
+        fetch(urlBestellposten + "/" + bestellpostenId + "/standardpizzen", {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+        fetchWholeOrder();
+    }
+
     function bestellpostenLoeschen(){
         const bestellpostenId = document.getElementById("chosenBestellpostenLoeschen").value;
         fetch(urlBestellposten + "/" + bestellungId + "/" + bestellpostenId, {
@@ -136,8 +152,18 @@ ZutatNummer getrennt mit Komma:
 
     function chooseZutat(){
         const bestellpostenId = document.getElementById("chosenBestellpostenZutat").value;
-        const zutaten = document.getElementById("chosenZutat").value;
-        console.log(zutaten);
+        const zutaten = document.getElementById("chosenZutat").value.split(",");
+        const data = {
+            zutaten: zutaten
+        };
+        fetch(urlBestellposten + bestellpostenId, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+        console.log(JSON.stringify(data));
     }
 
     function fetchWholeOrder(){

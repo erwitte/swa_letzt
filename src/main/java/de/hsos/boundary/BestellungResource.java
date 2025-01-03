@@ -2,11 +2,10 @@ package de.hsos.boundary;
 
 import de.hsos.boundary.DTOs.ZutatDTO;
 import de.hsos.control.BestellungenService;
-import de.hsos.entity.BestellpostenPizza;
+import de.hsos.boundary.DTOs.StandardPizzenDTO;
 import de.hsos.gateway.DTO.BestellpostenJPAEntity;
 import de.hsos.gateway.DTO.BestellungJPAEntity;
 import io.quarkus.qute.CheckedTemplate;
-import io.quarkus.qute.Template;
 import io.quarkus.qute.TemplateInstance;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -35,18 +34,18 @@ public class BestellungResource
     BestellungenService bestellungenService;
     @CheckedTemplate(requireTypeSafeExpressions = false)
     public static class Templates {
-        public static native TemplateInstance index(List<BestellpostenPizza> pizzas,List<ZutatDTO> zutaten);
+        public static native TemplateInstance index(List<StandardPizzenDTO> pizzas, List<ZutatDTO> zutaten);
     }
 
     @GET
     @Produces(MediaType.TEXT_HTML)
     public TemplateInstance est(){
-        List<BestellpostenPizza> pizzas = List.of(
-                new BestellpostenPizza("Margherita", 6.50),
-                new BestellpostenPizza("Funghi", 7.50),
-                new BestellpostenPizza("Sucuk", 8.00),
-                new BestellpostenPizza("Sucuk mit Ei", 9.00),
-                new BestellpostenPizza("Kebab", 10.00)
+        List<StandardPizzenDTO> pizzas = List.of(
+                new StandardPizzenDTO("Margherita", 6.50, 1),
+                new StandardPizzenDTO("Funghi", 7.50, 2),
+                new StandardPizzenDTO("Sucuk", 8.00, 3),
+                new StandardPizzenDTO("Sucuk mit Ei", 9.00, 4),
+                new StandardPizzenDTO("Kebab", 10.00, 5)
         );
         return Templates.index(pizzas, alleZutaten);
     }
